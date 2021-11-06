@@ -35,21 +35,21 @@ formOptionMarca.addEventListener('click', () => {
       const formOptions = document.querySelector('.form-option-modelo')
 
       for (const item of data.modelos) {
-        console.log(item)
         const option = document.createElement('option')
         option.innerText = item.nome
         option.value = item.codigo
-        formOptions.appendChild(option) /* option.classList.add(item) */
+        formOptions.appendChild(option)
       }
     })
 })
 
-const formOptionAno = document.querySelector('.form-option-modelo')
-
-formOptionAno.addEventListener('click', () => {
-  const valueAno = formOptionAno.options[formOptionAno.selectedIndex].value
-  const valueNumber = Number(valueAno)
-  console.log(typeof valueAno)
+const formOptionModelo = document.querySelector('.form-option-modelo')
+let valueNumber
+formOptionModelo.addEventListener('click', () => {
+  const valueModelo =
+    formOptionModelo.options[formOptionModelo.selectedIndex].value
+  valueNumber = Number(valueModelo)
+  console.log(typeof valueModelo)
 
   const urlValueAno = `https://parallelum.com.br/fipe/api/v1/${valueCar}/marcas/${valueMarca}/modelos/${valueNumber}/anos`
   fetch(urlValueAno)
@@ -65,13 +65,71 @@ formOptionAno.addEventListener('click', () => {
         const option = document.createElement('option')
         option.innerText = item.nome
         option.value = item.codigo
-        formOptions.appendChild(option) /* option.classList.add(item) */
+        formOptions.appendChild(option)
       }
     })
 })
 
-const btnSaveFipe = document.querySelector('.fipe-save')
-const modalFipe = document.querySelector('.modal-fipe')
-btnSaveFipe.addEventListener('click', () => {
-  modalFipe.classList.toggle('hidden')
+const formOptionAno = document.querySelector('.form-option-ano')
+
+formOptionAno.addEventListener('click', () => {
+  const valueAno = formOptionAno.options[formOptionAno.selectedIndex].value
+
+  console.log(typeof valueAno)
+
+  const urlValueAno = `https://parallelum.com.br/fipe/api/v1/${valueCar}/marcas/${valueMarca}/modelos/${valueNumber}/anos/${valueAno}`
+  fetch(urlValueAno)
+    .then(function (response) {
+      return response.json()
+    })
+    .then((data) => {
+      console.log(data)
+      const formOptions = document.querySelector('.form-option-valor')
+      const optionAno = document.createElement('option')
+      optionAno.innerText = data.Valor
+      optionAno.value = 1
+      formOptions.appendChild(optionAno)
+
+      const formOptionValor = document.querySelector('.form-option-valor')
+      formOptionValor.addEventListener('click', () => {
+        const bgTranparent = document.querySelector('.bg-transparent')
+        bgTranparent.classList.add('hidden')
+        const valueValor =
+          formOptionValor.options[formOptionValor.selectedIndex].value
+        const valueNumber = Number(valueValor)
+        const main = document.querySelector('.main')
+        if (valueNumber === 1) {
+          console.log('deu certo')
+          const divBody = document.createElement('div')
+          const pCar = document.createElement('p')
+          const pMa = document.createElement('p')
+          const pMo = document.createElement('p')
+          const pAn = document.createElement('p')
+          const pV = document.createElement('p')
+          const btnClose = document.createElement('button')
+          const mainModal = document.createElement('div')
+          divBody.classList.add('modal-fipe')
+          mainModal.classList.add('modal-main')
+          main.appendChild(divBody)
+          divBody.appendChild(mainModal)
+          mainModal.appendChild(pCar)
+          mainModal.appendChild(pMa)
+          mainModal.appendChild(pMo)
+          mainModal.appendChild(pAn)
+          mainModal.appendChild(pV)
+          divBody.appendChild(btnClose)
+          pCar.innerText = `Codifo Fipe : ${data.CodigoFipe}`
+          pMa.innerText = `Marca: ${data.Marca}`
+          pMo.innerText = `Modelo : ${data.Modelo}`
+          pAn.innerText = `Ano : ${data.AnoModelo}`
+          pV.innerText = `valor : ${data.Valor}`
+          btnClose.classList.add('bg-style')
+          btnClose.innerText = 'fechar'
+          btnClose.addEventListener('click', () => {
+            divBody.classList.add('hidden')
+            bgTranparent.classList.remove('hidden')
+          })
+        }
+      })
+    })
 })
